@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>হিসাবি প্রো | দোকানের ডিজিটাল খাতা</title>
+<style>
+:root{
+ --bg:#f3f5fa;--card:#fff;--ink:#182238;
+ --muted:#7b8498;--line:#e8ebf2;
+ --navy:#101827;--green:#087f65;
+ --red:#d74747;--gold:#d99a24;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--ink);
+ font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif;
+ font-size:14px
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:850px;margin:auto;padding:16px 14px 35px}
+header{
+ background:var(--navy);color:white;border-radius:22px;
+ padding:23px 20px;margin-bottom:16px;
+ box-shadow:0 8px 25px #10182718
+}
+.brand{font-size:23px;font-weight:850;letter-spacing:-.5px}
+.brand span{color:#61e0b4}
+.subtitle{color:#b9c4d8;margin-top:5px;font-size:12px}
+.topline{display:flex;justify-content:space-between;align-items:center}
+.pill{font-size:10px;border:1px solid #536176;padding:5px 9px;border-radius:30px}
+.date{color:#c5cee0;font-size:12px;margin-top:18px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.card{
+ background:var(--card);border:1px solid var(--line);
+ border-radius:17px;padding:16px;min-width:0
+}
+.stat-label{font-size:12px;color:var(--muted)}
+.stat-value{font-size:23px;font-weight:850;margin-top:9px;overflow-wrap:anywhere}
+.stat-note{font-size:11px;color:var(--muted);margin-top:5px}
+.green{color:var(--green)}.red{color:var(--red)}
+.section{margin-top:21px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+h2{font-size:16px;margin:0;font-weight:800}
+.muted{color:var(--muted);font-size:12px}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.btn{
+ border:0;border-radius:12px;padding:12px 13px;
+ font-weight:750;background:var(--navy);color:white
+}
+.btn.greenbtn{background:var(--green)}
+.btn.light{background:#eef2f7;color:var(--ink)}
+.btn.danger{background:#fff0f0;color:var(--red)}
+.btn.small{padding:8px 10px;font-size:12px}
+input,select{
+ width:100%;padding:12px;border:1px solid #dfe4ee;
+ background:#fff;border-radius:11px;outline:none;color:var(--ink)
+}
+input:focus,select:focus{border-color:#087f65}
+.field{margin-bottom:12px}
+.field label{display:block;margin-bottom:6px;font-size:12px;font-weight:700}
+.search{margin-bottom:12px}
+.list{display:grid;gap:9px}
+.item{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:10px;background:#fff;border:1px solid var(--line);
+ border-radius:14px;padding:13px
+}
+.item-main{min-width:0;flex:1}
+.item-name{font-weight:800;overflow-wrap:anywhere}
+.item-sub{font-size:11px;color:var(--muted);margin-top:5px}
+.item-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.amount{font-weight:850;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:24px 10px}
+.tabs{display:flex;gap:7px;overflow-x:auto;margin:17px 0}
+.tab{white-space:nowrap;border:1px solid var(--line);background:white;
+ padding:10px 13px;border-radius:12px;color:var(--ink);font-weight:700}
+.tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.panel{display:none}.panel.active{display:block}
+.note{
+ padding:13px;background:#eaf7f2;border-radius:13px;
+ font-size:12px;color:#16614f;line-height:1.8
+}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:24px 0}
+dialog{
+ border:0;border-radius:19px;width:calc(100% - 28px);
+ max-width:430px;padding:21px;box-shadow:0 20px 70px #0003
+}
+dialog::backdrop{background:#10182788}
+.dialog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.close{border:0;background:#eef2f7;border-radius:9px;padding:7px 11px}
+.hidden{display:none!important}
+#loading{min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+#loginScreen{
+ min-height:100vh;display:flex;flex-direction:column;align-items:center;
+ justify-content:center;text-align:center;padding:24px;background:var(--navy);color:#fff
+}
+#loginScreen img{width:96px;height:96px;border-radius:24px;margin-bottom:18px}
+#loginScreen h1{margin:0;font-size:28px;letter-spacing:-.5px}
+#loginScreen h1 span{color:#61e0b4}
+#loginScreen p{color:#b9c4d8;margin:10px 0 28px;font-size:13px;line-height:1.7}
+#loginBtn{background:#fff;color:#182238;padding:14px 22px;border-radius:14px;font-weight:800;font-size:15px;border:0}
+#loginError{color:#ff9a9a;margin-top:16px;font-size:12px;max-width:320px;line-height:1.6}
+@media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.actions{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+
+<div id="loading">লোড হচ্ছে...</div>
+
+<div id="loginScreen" class="hidden">
+ <img src="icon-192.png" alt="">
+ <h1>হিসাবি <span>প্রো</span></h1>
+ <p>আপনার দোকানের হিসাব Gmail-এর সাথে নিরাপদে জমা থাকবে।<br>ফোন বদলালেও একই Gmail দিয়ে ঢুকলে সব ফিরে পাবেন।</p>
+ <button id="loginBtn">Gmail দিয়ে লগইন করুন</button>
+ <div id="loginError"></div>
+</div>
+
+<div class="app hidden" id="appRoot">
+<header>
+ <div class="topline">
+  <div class="brand">হিসাবি <span>প্রো</span></div>
+  <span class="pill">SHOP EDITION</span>
+ </div>
+ <div class="subtitle">আপনার দোকান, আপনার হিসাব — এক জায়গায়</div>
+ <div class="subtitle">তৈরি করেছেন: সোয়াইব শা</div>
+ <div class="date" id="today"></div>
+</header>
+
+<div class="grid">
+ <div class="card">
+  <div class="stat-label">আজকের বিক্রি</div>
+  <div class="stat-value" id="sales">৳০</div>
+  <div class="stat-note">আজকের বিক্রির মোট পরিমাণ</div>
+ </div>
+ <div class="card">
+  <div class="stat-label">আজকের খরচ</div>
+  <div class="stat-value red" id="expenses">৳০</div>
+  <div class="stat-note">আজকের রেকর্ড করা খরচ</div>
+ </div>
+ <div class="card">
+  <div class="stat-label">মোট বাকি</div>
+  <div class="stat-value" id="dues">৳০</div>
+  <div class="stat-note">সব গ্রাহকের পাওনা</div>
+ </div>
+ <div class="card">
+  <div class="stat-label">গ্রাহক</div>
+  <div class="stat-value" id="customersCount">০</div>
+  <div class="stat-note">সংরক্ষিত গ্রাহকের সংখ্যা</div>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-head"><h2>দ্রুত কাজ</h2></div>
+ <div class="actions">
+  <button class="btn greenbtn" onclick="openForm('customer')">＋ গ্রাহক</button>
+  <button class="btn" onclick="openForm('sale')">＋ বিক্রি</button>
+  <button class="btn light" onclick="openForm('expense')">− খরচ</button>
+  <button class="btn light" onclick="backup()">⇩ ব্যাকআপ</button>
+ </div>
+</div>
+
+<div class="tabs">
+ <button class="tab active" data-tab="customers">গ্রাহক ও বাকি</button>
+ <button class="tab" data-tab="records">লেনদেন</button>
+ <button class="tab" data-tab="reports">রিপোর্ট</button>
+ <button class="tab" data-tab="settings">সেটিংস</button>
+</div>
+
+<section class="panel active" id="customers">
+ <div class="section-head">
+  <h2>গ্রাহকের খাতা</h2>
+  <span class="muted" id="customerSummary"></span>
+ </div>
+ <input class="search" id="search" placeholder="নাম বা ফোন দিয়ে খুঁজুন..." oninput="renderCustomers()">
+ <div class="list" id="customerList"></div>
+</section>
+
+<section class="panel" id="records">
+ <div class="section-head"><h2>সাম্প্রতিক লেনদেন</h2></div>
+ <div class="list" id="recordList"></div>
+</section>
+
+<section class="panel" id="reports">
+ <div class="section-head"><h2>ব্যবসার সারাংশ</h2></div>
+ <div class="grid">
+  <div class="card"><div class="stat-label">মোট বিক্রি</div><div class="stat-value" id="allSales">৳০</div></div>
+  <div class="card"><div class="stat-label">মোট খরচ</div><div class="stat-value red" id="allExpenses">৳০</div></div>
+  <div class="card"><div class="stat-label">মোট আদায়</div><div class="stat-value green" id="allPayments">৳০</div></div>
+  <div class="card"><div class="stat-label">বিক্রি − খরচ</div><div class="stat-value" id="difference">৳০</div></div>
+ </div>
+ <p class="muted">বিক্রি − খরচ কেবল একটি সাধারণ হিসাব। এটি প্রকৃত লাভ নয়, কারণ পণ্যের ক্রয়মূল্য ও অন্যান্য খরচ আলাদাভাবে হিসাব করা হয়নি।</p>
+ <button class="btn light" onclick="exportCSV()">লেনদেন CSV ডাউনলোড</button>
+</section>
+
+<section class="panel" id="settings">
+ <div class="section-head"><h2>দোকানের সেটিংস</h2></div>
+ <div class="card" style="margin-bottom:12px">
+  <div class="stat-label">লগইন করা আছে</div>
+  <div class="item-name" id="accountEmail" style="margin:6px 0 12px"></div>
+  <button class="btn light" onclick="logout()">লগআউট</button>
+ </div>
+ <div class="card">
+  <div class="field"><label>দোকানের নাম</label><input id="shopName" placeholder="যেমন: মদিনা স্টোর"></div>
+  <button class="btn greenbtn" onclick="saveShop()">নাম সংরক্ষণ</button>
+  <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+  <div class="field"><label>পুরোনো ব্যাকআপ পুনরুদ্ধার (JSON)</label><input type="file" id="restoreFile" accept=".json,application/json"></div>
+  <button class="btn light" onclick="restoreBackup()">ব্যাকআপ পুনরুদ্ধার</button>
+  <p class="muted">পুনরুদ্ধার করলে বর্তমান ডেটা প্রতিস্থাপিত হবে। আগে ব্যাকআপ রাখো।</p>
+  <button class="btn danger" onclick="clearAll()">সব ডেটা মুছুন</button>
+ </div>
+ <div class="note" style="margin-top:12px">
+  আপনার ডেটা এই Gmail অ্যাকাউন্টের সাথে অনলাইনে জমা থাকে। অ্যাপ মুছে আবার ইনস্টল করলে বা ফোন বদলালে একই Gmail দিয়ে লগইন করলেই সব ফিরে আসবে। ইন্টারনেট না থাকলেও লেখা যাবে, নেট এলে নিজে থেকে সিঙ্ক হবে।
+ </div>
+</section>
+
+<footer>হিসাবি প্রো · তৈরি করেছেন সোয়াইব শা · নিজের ব্যাকআপ নিয়মিত রাখুন</footer>
+</div>
+
+<dialog id="formDialog">
+ <div class="dialog-head"><h2 id="formTitle">নতুন তথ্য</h2><button class="close" onclick="closeForm()">✕</button></div>
+ <form id="entryForm">
+  <div id="formFields"></div>
+  <button class="btn greenbtn" style="width:100%" type="submit">সংরক্ষণ করুন</button>
+ </form>
+</dialog>
+
+<dialog id="paymentDialog">
+ <div class="dialog-head"><h2>টাকা আদায়</h2><button class="close" onclick="paymentDialog.close()">✕</button></div>
+ <div id="paymentInfo" class="muted" style="margin-bottom:14px"></div>
+ <form id="paymentForm">
+  <div class="field"><label>আদায়ের পরিমাণ (৳)</label><input id="paymentAmount" type="number" min="0.01" step="0.01" required></div>
+  <div class="field"><label>নোট (ঐচ্ছিক)</label><input id="paymentNote" placeholder="যেমন: নগদ পেমেন্ট"></div>
+  <button class="btn greenbtn" style="width:100%">পেমেন্ট সংরক্ষণ</button>
+ </form>
+</dialog>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+  getRedirectResult, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+import { initializeFirestore, getFirestore, persistentLocalCache,
+  persistentMultipleTabManager, collection, doc, setDoc, onSnapshot, writeBatch }
+  from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCiRgOSi1NT4iPCEoInGCt9ceJyavFw5gw",
+  authDomain: "hisabi-pro-bangladesh.firebaseapp.com",
+  projectId: "hisabi-pro-bangladesh",
+  storageBucket: "hisabi-pro-bangladesh.firebasestorage.app",
+  messagingSenderId: "969338831788",
+  appId: "1:969338831788:web:97fd8e098fc0f387b53009"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+let db;
+try{
+  db = initializeFirestore(fbApp,{
+    localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
+  });
+}catch(e){ db = getFirestore(fbApp); }
+
+const $ = id => document.getElementById(id);
+const money = n => "৳" + Number(n || 0).toLocaleString("bn-BD",{maximumFractionDigits:2});
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const day = () => new Date().toLocaleDateString("en-CA");
+const todayLabel = new Date().toLocaleDateString("bn-BD",{
+ weekday:"long",year:"numeric",month:"long",day:"numeric"
+});
+
+let data = {customers:[],records:[],shop:"আমার দোকান"};
+let activeCustomer = null;
+let user = null;
+let unsubs = [];
+let errShown = false;
+
+function onErr(e){
+ console.error(e);
+ if(errShown)return;
+ errShown = true;
+ setTimeout(()=>{errShown=false},4000);
+ const code = e && e.code ? e.code : "";
+ if(code==="permission-denied")
+  alert("ডেটা সংরক্ষণের অনুমতি নেই। Firestore-এর Rules ঠিকমতো দেওয়া হয়েছে কি না দেখুন।");
+ else alert("ডেটা সংরক্ষণ বা পড়ায় সমস্যা হয়েছে। "+(code||""));
+}
+
+/* ---------- Login ---------- */
+async function login(){
+ $("loginError").textContent="";
+ const p = new GoogleAuthProvider();
+ p.setCustomParameters({prompt:"select_account"});
+ try{
+  await signInWithPopup(auth,p);
+ }catch(e){
+  if(e.code==="auth/popup-blocked" || e.code==="auth/operation-not-supported-in-this-environment"){
+   try{ await signInWithRedirect(auth,p); }catch(e2){ $("loginError").textContent="লগইন করা যায়নি: "+(e2.code||e2.message); }
+  }else if(e.code!=="auth/popup-closed-by-user" && e.code!=="auth/cancelled-popup-request"){
+   $("loginError").textContent="লগইন করা যায়নি: "+(e.code||e.message);
+  }
+ }
+}
+function logout(){
+ if(confirm("লগআউট করবেন?")) signOut(auth);
+}
+$("loginBtn").addEventListener("click",login);
+getRedirectResult(auth).catch(e=>{ $("loginError").textContent="লগইন করা যায়নি: "+(e.code||e.message); });
+
+onAuthStateChanged(auth,u=>{
+ $("loading").classList.add("hidden");
+ stopSync();
+ if(u){
+  user=u;
+  $("accountEmail").textContent=u.email||u.displayName||"";
+  $("loginScreen").classList.add("hidden");
+  $("appRoot").classList.remove("hidden");
+  startSync();
+ }else{
+  user=null;
+  data={customers:[],records:[],shop:"আমার দোকান"};
+  $("appRoot").classList.add("hidden");
+  $("loginScreen").classList.remove("hidden");
+ }
+});
+
+/* ---------- Cloud sync ---------- */
+function stopSync(){ unsubs.forEach(f=>f()); unsubs=[]; }
+function startSync(){
+ const uidv=user.uid;
+ unsubs.push(onSnapshot(doc(db,"users",uidv),s=>{
+  data.shop=(s.exists()&&s.data().shop)||"আমার দোকান";
+  render();
+ },onErr));
+ unsubs.push(onSnapshot(collection(db,"users",uidv,"customers"),s=>{
+  data.customers=s.docs.map(d=>d.data())
+   .sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt)));
+  render();
+ },onErr));
+ unsubs.push(onSnapshot(collection(db,"users",uidv,"records"),s=>{
+  data.records=s.docs.map(d=>d.data())
+   .sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+  render();
+ },onErr));
+}
+function put(name,obj){
+ setDoc(doc(db,"users",user.uid,name,obj.id),obj).catch(onErr);
+}
+async function runBatches(ops){
+ for(let i=0;i<ops.length;i+=400){
+  const b=writeBatch(db);
+  ops.slice(i,i+400).forEach(f=>f(b));
+  await b.commit();
+ }
+}
+
+/* ---------- Logic ---------- */
+function customerDue(c){
+ return data.records.reduce((sum,r)=>{
+  if(r.customerId!==c.id)return sum;
+  if(r.type==="credit")return sum+Number(r.amount);
+  if(r.type==="payment")return sum-Number(r.amount);
+  return sum;
+ },0);
+}
+function total(type,onlyToday=false){
+ return data.records.filter(r=>r.type===type &&
+  (!onlyToday || r.date===day()))
+  .reduce((s,r)=>s+Number(r.amount),0);
+}
+function addRecord(type,amount,note="",customerId=null){
+ put("records",{
+  id:uid(),type,amount:Number(amount),note,customerId:customerId||null,
+  date:day(),createdAt:new Date().toISOString()
+ });
+}
+function safeText(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function render(){
+ $("today").textContent=todayLabel+" · "+data.shop;
+ $("sales").textContent=money(total("sale",true));
+ $("expenses").textContent=money(total("expense",true));
+ $("dues").textContent=money(data.customers.reduce((s,c)=>s+customerDue(c),0));
+ $("customersCount").textContent=data.customers.length.toLocaleString("bn-BD");
+ $("allSales").textContent=money(total("sale"));
+ $("allExpenses").textContent=money(total("expense"));
+ $("allPayments").textContent=money(total("payment"));
+ $("difference").textContent=money(total("sale")-total("expense"));
+ $("customerSummary").textContent=data.customers.length.toLocaleString("bn-BD")+" জন";
+ if(document.activeElement!==$("shopName"))$("shopName").value=data.shop;
+ renderCustomers();renderRecords();
+}
+function renderCustomers(){
+ const q=$("search").value.trim().toLowerCase();
+ const list=data.customers.filter(c=>
+  c.name.toLowerCase().includes(q) || (c.phone||"").includes(q));
+ $("customerList").innerHTML=list.length?list.map(c=>{
+  const due=customerDue(c);
+  return `<div class="item">
+   <div class="item-main">
+    <div class="item-name">${safeText(c.name)}</div>
+    <div class="item-sub">${safeText(c.phone||"ফোন দেওয়া নেই")}</div>
+    <div class="amount ${due>0?"red":"green"}" style="margin-top:7px">${due>0?"বাকি: ":"অবশিষ্ট: "}${money(due)}</div>
+   </div>
+   <div class="item-actions">
+    <button class="btn small greenbtn" onclick="takePayment('${c.id}')">আদায়</button>
+    <button class="btn small light" onclick="addCredit('${c.id}')">বাকি দিন</button>
+    <button class="btn small light" onclick="customerHistory('${c.id}')">বিস্তারিত</button>
+   </div>
+  </div>`;
+ }).join(""):'<div class="empty">কোনো গ্রাহক পাওয়া যায়নি।<br>＋ গ্রাহক বাটনে চাপ দিয়ে শুরু করো।</div>';
+}
+function renderRecords(){
+ $("recordList").innerHTML=data.records.slice(0,100).map(r=>{
+  const c=data.customers.find(x=>x.id===r.customerId);
+  const names={sale:"বিক্রি",expense:"খরচ",credit:"বাকি যোগ",payment:"টাকা আদায়"};
+  const sign=r.type==="expense"?"−":r.type==="payment"?"+":"";
+  return `<div class="item">
+   <div class="item-main">
+    <div class="item-name">${safeText(names[r.type]||r.type)}${c?" · "+safeText(c.name):""}</div>
+    <div class="item-sub">${safeText(r.date)}${r.note?" · "+safeText(r.note):""}</div>
+   </div>
+   <div class="amount">${sign}${money(r.amount)}</div>
+  </div>`;
+ }).join("")||'<div class="empty">এখনো কোনো লেনদেন নেই।</div>';
+}
+
+document.querySelectorAll(".tab").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active");$(btn.dataset.tab).classList.add("active");
+ });
+});
+
+function openForm(type,customerId=null){
+ const titles={customer:"নতুন গ্রাহক",sale:"নতুন বিক্রি",expense:"নতুন খরচ",credit:"বাকি যোগ"};
+ $("formTitle").textContent=titles[type];
+ const f=$("formFields");
+ if(type==="customer"){
+  f.innerHTML=`
+   <div class="field"><label>গ্রাহকের নাম *</label><input name="name" required maxlength="100"></div>
+   <div class="field"><label>মোবাইল নম্বর</label><input name="phone" maxlength="25" inputmode="tel"></div>
+   <div class="field"><label>প্রাথমিক বাকি (৳)</label><input name="opening" type="number" min="0" step="0.01" value="0" required></div>`;
+ }else{
+  f.innerHTML=`
+   <div class="field"><label>${type==="sale"?"বিক্রির পরিমাণ":type==="expense"?"খরচের পরিমাণ":"বাকি দেওয়ার পরিমাণ"} (৳) *</label>
+   <input name="amount" type="number" min="0.01" step="0.01" required></div>
+   <div class="field"><label>বিবরণ</label><input name="note" maxlength="200" placeholder="বিবরণ লিখুন"></div>
+   ${type==="sale"?'<div class="field"><label>বাকি যোগ করতে চাইলে গ্রাহক নির্বাচন</label><select name="customerId"><option value="">সম্পূর্ণ টাকা আদায়</option>'+data.customers.map(c=>`<option value="${c.id}" ${c.id===customerId?"selected":""}>${safeText(c.name)}</option>`).join("")+'</select></div>':""}`;
+ }
+ $("formDialog").dataset.type=type;
+ $("formDialog").dataset.customerId=customerId||"";
+ $("formDialog").showModal();
+}
+function closeForm(){$("formDialog").close()}
+
+$("entryForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const type=$("formDialog").dataset.type;
+ const fd=new FormData(e.target);
+ if(type==="customer"){
+  const name=String(fd.get("name")||"").trim();
+  const phone=String(fd.get("phone")||"").trim();
+  const opening=Number(fd.get("opening"));
+  if(!name||!Number.isFinite(opening)||opening<0)return alert("সঠিক তথ্য দাও।");
+  const c={id:uid(),name,phone,createdAt:new Date().toISOString()};
+  put("customers",c);
+  if(opening>0)addRecord("credit",opening,"প্রাথমিক বাকি",c.id);
+ }else{
+  const amount=Number(fd.get("amount"));
+  if(!Number.isFinite(amount)||amount<=0)return alert("সঠিক পরিমাণ দাও।");
+  const note=String(fd.get("note")||"").trim();
+  if(type==="sale"){
+   const cid=String(fd.get("customerId")||"");
+   if(cid)addRecord("credit",amount,note||"বিক্রির বাকি",cid);
+   else addRecord("sale",amount,note);
+  }else if(type==="expense")addRecord("expense",amount,note);
+  else addRecord("credit",amount,note,$("formDialog").dataset.customerId);
+ }
+ closeForm();e.target.reset();
+});
+
+function takePayment(id){
+ const c=data.customers.find(x=>x.id===id);if(!c)return;
+ activeCustomer=id;
+ $("paymentInfo").textContent=c.name+" · বর্তমান বাকি "+money(customerDue(c));
+ $("paymentAmount").max=Math.max(0,customerDue(c));
+ $("paymentAmount").value="";
+ $("paymentNote").value="";
+ $("paymentDialog").showModal();
+}
+$("paymentForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const amount=Number($("paymentAmount").value);
+ const c=data.customers.find(x=>x.id===activeCustomer);
+ if(!c||!Number.isFinite(amount)||amount<=0)return alert("সঠিক পরিমাণ দাও।");
+ if(amount>customerDue(c)+0.00001)return alert("আদায়ের পরিমাণ বর্তমান বাকি থেকে বেশি হতে পারবে না।");
+ addRecord("payment",amount,$("paymentNote").value.trim(),c.id);
+ $("paymentDialog").close();
+});
+function addCredit(id){openForm("credit",id)}
+
+function customerHistory(id){
+ const c=data.customers.find(x=>x.id===id);if(!c)return;
+ const rows=data.records.filter(r=>r.customerId===id);
+ const detail=rows.map(r=>
+  `${r.date} | ${r.type==="credit"?"বাকি":r.type==="payment"?"আদায়":r.type} | ${money(r.amount)}`
+ ).join("\n");
+ alert(c.name+"\nমোবাইল: "+(c.phone||"নেই")+
+  "\nবর্তমান বাকি: "+money(customerDue(c))+
+  "\n\nলেনদেন:\n"+(detail||"কোনো লেনদেন নেই"));
+}
+function saveShop(){
+ const name=$("shopName").value.trim();
+ if(!name)return alert("দোকানের নাম লিখুন।");
+ setDoc(doc(db,"users",user.uid),{shop:name},{merge:true}).catch(onErr);
+ alert("দোকানের নাম সংরক্ষিত হয়েছে।");
+}
+function backup(){
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;
+ a.download="hisabi-pro-backup-"+day()+".json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function restoreBackup(){
+ const file=$("restoreFile").files[0];
+ if(!file)return alert("আগে JSON ব্যাকআপ ফাইল নির্বাচন করো।");
+ const reader=new FileReader();
+ reader.onload=async()=>{
+  let x;
+  try{
+   x=JSON.parse(reader.result);
+   if(!x||!Array.isArray(x.customers)||!Array.isArray(x.records)||
+      x.customers.length>100000||x.records.length>100000)
+    throw Error("Invalid backup");
+   const ids=new Set();
+   for(const c of x.customers){
+    if(!c.id||typeof c.name!=="string"||ids.has(c.id))throw Error("Invalid customer");
+    ids.add(c.id);
+   }
+   for(const r of x.records){
+    if(!r.id||!["sale","expense","credit","payment"].includes(r.type)||
+       !Number.isFinite(Number(r.amount))||Number(r.amount)<=0||
+       (r.customerId&&!ids.has(r.customerId)))throw Error("Invalid record");
+   }
+  }catch(e){return alert("ব্যাকআপ ফাইলটি সঠিক নয় বা পড়া যাচ্ছে না।")}
+  if(!confirm("বর্তমান ডেটার পরিবর্তে ব্যাকআপের ডেটা বসবে। এগোবে?"))return;
+  try{
+   const u=user.uid,ops=[];
+   data.customers.forEach(c=>ops.push(b=>b.delete(doc(db,"users",u,"customers",c.id))));
+   data.records.forEach(r=>ops.push(b=>b.delete(doc(db,"users",u,"records",r.id))));
+   x.customers.forEach(c=>ops.push(b=>b.set(doc(db,"users",u,"customers",c.id),{
+    id:c.id,name:c.name,phone:c.phone||"",createdAt:c.createdAt||new Date().toISOString()})));
+   x.records.forEach(r=>ops.push(b=>b.set(doc(db,"users",u,"records",r.id),{
+    id:r.id,type:r.type,amount:Number(r.amount),note:r.note||"",customerId:r.customerId||null,
+    date:r.date||day(),createdAt:r.createdAt||new Date().toISOString()})));
+   ops.push(b=>b.set(doc(db,"users",u),{shop:typeof x.shop==="string"?x.shop:"আমার দোকান"},{merge:true}));
+   await runBatches(ops);
+   alert("ব্যাকআপ পুনরুদ্ধার হয়েছে।");
+  }catch(e){onErr(e)}
+ };
+ reader.readAsText(file);
+}
+function exportCSV(){
+ const rows=[["তারিখ","ধরন","গ্রাহক","পরিমাণ","বিবরণ"]];
+ data.records.forEach(r=>{
+  const c=data.customers.find(x=>x.id===r.customerId);
+  rows.push([r.date,r.type,c?c.name:"",r.amount,r.note||""]);
+ });
+ const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+ const a=document.createElement("a");a.href=url;a.download="hisabi-pro-report.csv";a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function clearAll(){
+ if(!confirm("সব গ্রাহক ও লেনদেন মুছে যাবে। আগে ব্যাকআপ নিয়েছ?"))return;
+ if(!confirm("শেষবার নিশ্চিত করো: সব ডেটা স্থায়ীভাবে মুছবে?"))return;
+ try{
+  const u=user.uid,ops=[];
+  data.customers.forEach(c=>ops.push(b=>b.delete(doc(db,"users",u,"customers",c.id))));
+  data.records.forEach(r=>ops.push(b=>b.delete(doc(db,"users",u,"records",r.id))));
+  await runBatches(ops);
+ }catch(e){onErr(e)}
+}
+
+Object.assign(window,{openForm,closeForm,backup,renderCustomers,saveShop,
+ restoreBackup,exportCSV,clearAll,takePayment,addCredit,customerHistory,logout});
+
+if("serviceWorker" in navigator){
+ window.addEventListener("load",()=>{
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+ });
+}
+</script>
+</body>
+</html>
